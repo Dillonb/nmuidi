@@ -4,7 +4,7 @@ on:
     branches: 
       - main
 jobs:
-  build:
+  build-windows:
     runs-on: windows-latest
 
     steps:
@@ -20,11 +20,9 @@ jobs:
 
       - name: Build
         run: cargo build --all --release
-        
-      - name: Release
-        uses: "marvinpinto/action-automatic-releases@latest"
+
+      - name: Upload file
+        uses: actions/upload-artifact@master
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          title: "Latest Release"
-          files: target/release/nmuidi.exe
+          name: nmuidi-windows
+          path: target/release/nmuidi.exe
