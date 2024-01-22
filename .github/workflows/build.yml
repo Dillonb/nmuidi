@@ -1,9 +1,36 @@
 name: Rust
-on:
-  push:
-    branches: 
-      - main
+
+on: [push, pull_request]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_LOG: debug
+
 jobs:
+  format:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: cargo-fmt
+        run: cargo fmt --verbose
+
+  clippy:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: cargo-clippy
+        run: cargo clippy -- -Dwarnings
+
+  test:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: cargo-test
+        run: cargo test
+
   build-windows:
     runs-on: windows-latest
 
