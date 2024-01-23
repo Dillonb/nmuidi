@@ -24,7 +24,7 @@ jobs:
         run: cargo clippy -- -Dwarnings
       - name: cargo-clippy-pedantic
         continue-on-error: true
-        run: cargo clippy -W clippy::pedantic
+        run: cargo clippy -- -W clippy::pedantic
 
   test:
     runs-on: windows-latest
