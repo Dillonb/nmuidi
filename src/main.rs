@@ -1,81 +1,92 @@
-use std::{fs, env, time::SystemTime};
-
-use itertools::Itertools;
-use jwalk::{ WalkDir, Error, rayon::prelude::{ParallelBridge, ParallelIterator, IntoParallelRefIterator} };
-
-fn clean(dir_to_clean : String) -> Result<(), Error> {
-    let threads = num_cpus::get() * 100;
-    println!("Cleaning with {} threads.", threads);
-    let start_time = SystemTime::now();
-
-    let mut dirs : Vec<(std::path::PathBuf, usize)> = WalkDir::new(dir_to_clean)
-        .skip_hidden(false)
-        .parallelism(jwalk::Parallelism::RayonNewPool(threads))
-        .into_iter()
-        .par_bridge()
-        .flat_map(|entry| {
-            let mut dirs = Vec::new();
-            match entry {
-                Ok(e) => {
-                    let f_type = e.file_type;
-                    let path = e.path();
-                    let metadata = e.metadata().unwrap();
-
-                    let mut perm = metadata.permissions();
-                    if perm.readonly() {
-                        perm.set_readonly(false);
-                        match fs::set_permissions(&path, perm) {
-                            Ok(()) => (),
-                            Err(error) => println!("Error making {} not read only: {}", path.display(), error),
-                        }
-                    }
-                    if f_type.is_file() || f_type.is_symlink() {
-                        match fs::remove_file(&path) {
-                            Ok(()) => (),
-                            Err(error) => println!("Failed to remove file {}: {}", path.display(), error),
-                        }
-                    } else if f_type.is_dir() {
-                        dirs.push((path, e.depth));
-                    }
-                }
-                Err(error) => println!("Error processing entry: {}", error),
-            }
-            return dirs;
-        })
-        .collect();
-    let files_done = SystemTime::now();
-    println!("Done cleaning files, took {} seconds. Starting on dirs", files_done.duration_since(start_time).unwrap().as_secs());
-    dirs.sort_by(|a, b| {
-        b.1.cmp(&a.1)
-    });
-    let sorting_done = SystemTime::now();
-    println!("Done sorting, took {} seconds. Starting to delete directories.", sorting_done.duration_since(files_done).unwrap().as_secs());
-
-    let dirs_by_depth = dirs.iter().group_by(|x| x.1);
-    for (_, dirs) in &dirs_by_depth {
-        dirs.map(|x| &x.0).collect::<Vec<_>>()
-            .par_iter()
-            .for_each(|dir| {
-                match fs::remove_dir_all(dir.as_path()) {
-                    Err(error) => println!("Error removing directory {}: {}", dir.display(), error),
-                    Ok(()) => ()
-                }
-            });
-    }
-
-    let everything_done = SystemTime::now();
-    println!("Done deleting directories, took {} seconds. Entire process took {} seconds.", 
-        everything_done.duration_since(sorting_done).unwrap().as_secs(),
-        everything_done.duration_since(start_time).unwrap().as_secs(),
-    );
-
-    return Ok(());
-}
+use log::{debug, trace};
+use nmuidi::nmuidi::Cleaner;
+use std::{env, time::Instant};
 
 fn main() {
+    pretty_env_logger::init();
+
+    let mut directory_timings = Vec::new();
+    let start_time = Instant::now();
     for dir in env::args().skip(1) {
-        println!("Cleaning {}", dir);
-        let _ = clean(dir);
+        println!("Cleaning {dir}");
+        let start = Instant::now();
+
+        Cleaner::new(&dir).clean();
+        directory_timings.push((dir, start.elapsed()));
     }
-    println!("Done.");
+
+    let elapsed_time = start_time.elapsed();
+    debug!("Total time: {}s", elapsed_time.as_secs_f32());
+    debug!("Directory timings:");
+    for (dir, time_spent) in directory_timings {
+        debug!("  dir {dir} took {}s", time_spent.as_secs_f32());
+    }
+    trace!("Done.");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use jwalk::WalkDir;
+    use std::fs;
+
+    #[test]
+    fn test_nested() {
+        fs::create_dir_all("tmp/nested/dir1").unwrap();
+        fs::write("tmp/nested/dir1/file1.txt", "File 1 content").unwrap();
+
+        fs::create_dir_all("tmp/nested/dir1/dir2").unwrap();
+        fs::write("tmp/nested/dir1/dir2/file2.txt", "File 2 content").unwrap();
+
+        fs::create_dir_all("tmp/nested/dir1/dir2/dir3").unwrap();
+        fs::write("tmp/nested/dir1/dir2/dir3/file3.txt", "File 3 content").unwrap();
+
+        Cleaner::new("tmp/nested").clean();
+
+        let num_files = WalkDir::new("tmp/nested")
+            .skip_hidden(false)
+            .into_iter()
+            .collect::<Vec<_>>()
+            .len();
+        assert_eq!(num_files, 1);
+    }
+
+    #[test]
+    fn test_dirs() {
+        fs::create_dir_all("tmp/dirs/dir1").unwrap();
+        fs::create_dir_all("tmp/dirs/dir1a").unwrap();
+        fs::create_dir_all("tmp/dirs/dir1/dir2").unwrap();
+        fs::create_dir_all("tmp/dirs/dir1/dir2a").unwrap();
+        fs::create_dir_all("tmp/dirs/dir1/dir2/dir3").unwrap();
+        fs::create_dir_all("tmp/dirs/dir1/dir2/dir3a").unwrap();
+
+        Cleaner::new("tmp/dirs").clean();
+
+        let num_files = WalkDir::new("tmp/dirs")
+            .skip_hidden(false)
+            .into_iter()
+            .collect::<Vec<_>>()
+            .len();
+        assert_eq!(num_files, 1);
+    }
+
+    #[test]
+    fn test_files() {
+        fs::create_dir_all("tmp/files").unwrap();
+        fs::write("tmp/files/file1.txt", "File 1 content").unwrap();
+        fs::write("tmp/files/file2.txt", "File 2 content").unwrap();
+        fs::write("tmp/files/file3.txt", "File 3 content").unwrap();
+        fs::write("tmp/files/file4.txt", "File 4 content").unwrap();
+        fs::write("tmp/files/file5.txt", "File 5 content").unwrap();
+        fs::write("tmp/files/file6.txt", "File 6 content").unwrap();
+
+        Cleaner::new("tmp/files").clean();
+
+        let num_files = WalkDir::new("tmp/files")
+            .skip_hidden(false)
+            .into_iter()
+            .collect::<Vec<_>>()
+            .len();
+        assert_eq!(num_files, 1);
+    }
 }

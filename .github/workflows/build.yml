@@ -1,22 +1,46 @@
 name: Rust
-on:
-  push:
-    branches: 
-      - main
+
+on: [push, pull_request]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_LOG: debug
+
 jobs:
-  build-windows:
+  format:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
+      - uses: actions/checkout@v3
+      - name: cargo-fmt
+        run: cargo fmt --verbose
 
-      - name: Install latest rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          default: true
-          override: true
+  clippy:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: cargo-clippy
+        run: cargo clippy -- -Dwarnings
+      - name: cargo-clippy-pedantic
+        continue-on-error: true
+        run: cargo clippy -- -W clippy::pedantic
+
+  test:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: cargo-test
+        run: cargo test
+
+  build-windows:
+    runs-on: windows-latest
+    needs: [format, clippy, test]
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: dtolnay/rust-toolchain@stable
 
       - name: Build
         run: cargo build --all --release
