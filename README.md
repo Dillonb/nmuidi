@@ -6,6 +6,8 @@ Deletes stuff, hopefully quickly
 
 ## How to use
 
+### As a command-line tool
+
 You can download using the link above. The easiest way to use it in Windows is to make a folder (something like `C:\bin`) and add that folder to your path. Then add `nmuidi.exe` file you downloaded to that folder and restart any terminals you have open.
 
 Then you can run `nmuidi /path/to/some/dir` and you should see some output like the following:
@@ -19,6 +21,13 @@ Done sorting, took 0 seconds. Starting to delete directories.
 Done deleting directories, took 0 seconds. Entire process took 0 seconds.
 Done.
 ```
+
+### As a package
+
+1. `cargo add nmuidi`
+2. add `use nmuidi::nmuidi::Cleaner;`
+3. Create a cleaner and clean `Cleaner::new("some/path").clean();`
+
 
 ## Why the dumb name
 
