@@ -2,6 +2,14 @@
 name = "nmuidi"
 version = "0.1.0"
 edition = "2021"
+description = "Parallelizes deleting directories which can significantly speed up deleting large deeply nested directories with a large number of files on Windows"
+readme = "README.md"
+homepage = "https://github.com/Dillonb/nmuidi"
+documentation = "https://github.com/Dillonb/nmuidi"
+repository = "https://github.com/Dillonb/nmuidi"
+license-file = "LICENSE"
+keywords = ["windows", "delete", "parallel"]
+categories = ["command-line-utilities", "filesystem"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
