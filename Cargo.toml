@@ -1,6 +1,6 @@
 [package]
 name = "nmuidi"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Parallelizes deleting directories which can significantly speed up deleting large deeply nested directories with a large number of files on Windows"
 readme = "README.md"
