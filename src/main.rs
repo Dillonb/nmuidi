@@ -16,10 +16,10 @@ fn main() {
     }
 
     let elapsed_time = start_time.elapsed();
-    debug!("Total time: {}s", elapsed_time.as_secs_f32());
+    debug!("Total time: {:.2?}", elapsed_time);
     debug!("Directory timings:");
     for (dir, time_spent) in directory_timings {
-        debug!("  dir {dir} took {}s", time_spent.as_secs_f32());
+        debug!("  dir {dir} took {:.2?}", time_spent);
     }
     trace!("Done.");
 }
