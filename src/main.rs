@@ -3,6 +3,12 @@ use nmuidi::nmuidi::Cleaner;
 use std::{env, time::Instant};
 
 fn main() {
+
+    if env::args().len() < 2 {
+        println!("Usage: nmuidi <dir>");
+        return;
+    }
+
     pretty_env_logger::init();
 
     let mut directory_timings = Vec::new();
