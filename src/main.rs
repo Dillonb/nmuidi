@@ -3,44 +3,50 @@ use nmuidi::nmuidi::Cleaner;
 use std::{env, time::Instant};
 
 fn main() {
-    if env::args().len() == 2 {
-        println!("Are you sure you want to delete the files in the directory? (y/N)");
+    if env::args().any(|arg| arg == "-h") {
+        println!("Usage: nmuidi <dir> [dirs...] (-y)");
+        return;
+    }
+    
+    if env::args().last().unwrap() == "-y" {
+        println!("Deleting without confirmation...");
+        clean();
+    } else {
+        println!("Are you sure you want to delete the folder and everything inside of it? (y/N)");
         let mut input = String::new();
         std::io::stdin().read_line(&mut input).unwrap();
-        if input.trim() != "y" {
+        if input.trim() == "y" {
+            clean();
+        } else {
             println!("Exiting...");
             return;
         }
-    } else if env::args().len() == 3 {
-        if env::args().nth(2).unwrap() != "-y" {
-            println!("Usage: nmuidi <dir> (-y)");
-            return;
-        } else {
-            println!("Deleting without confirmation...");
-            pretty_env_logger::init();
-
-            let mut directory_timings = Vec::new();
-            let start_time = Instant::now();
-            for dir in env::args().skip(1) {
-                println!("Cleaning {dir}");
-                let start = Instant::now();
-
-                Cleaner::new(&dir).clean();
-                directory_timings.push((dir, start.elapsed()));
-            }
-
-            let elapsed_time = start_time.elapsed();
-            debug!("Total time: {:.2?}", elapsed_time);
-            debug!("Directory timings:");
-            for (dir, time_spent) in directory_timings {
-                debug!("  dir {dir} took {:.2?}", time_spent);
-            }
-            trace!("Done.");
-        }
-    } else {
-        println!("Usage: nmuidi <dir> (-y)");
-        return;
     }
+}
+
+fn clean() {
+    pretty_env_logger::init();
+
+    let mut directory_timings = Vec::new();
+    let start_time = Instant::now();
+    for dir in env::args().skip(1) {
+        if dir == "-y" {
+            continue;
+        }
+        println!("Cleaning {dir}");
+        let start = Instant::now();
+
+        Cleaner::new(&dir).clean();
+        directory_timings.push((dir, start.elapsed()));
+    }
+
+    let elapsed_time = start_time.elapsed();
+    debug!("Total time: {:.2?}", elapsed_time);
+    debug!("Directory timings:");
+    for (dir, time_spent) in directory_timings {
+        debug!("  dir {dir} took {:.2?}", time_spent);
+    }
+    trace!("Done.");
 }
 
 #[cfg(test)]
