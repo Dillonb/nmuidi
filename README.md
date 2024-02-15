@@ -8,9 +8,23 @@ Deletes stuff, hopefully quickly
 
 ### As a command-line tool
 
-You can download using the link above. The easiest way to use it in Windows is to make a folder (something like `C:\bin`) and add that folder to your path. Then add `nmuidi.exe` file you downloaded to that folder and restart any terminals you have open.
+<details>
+<summary>Pre-Compiled</summary>
+[Download nmuidi for Windows](https://nightly.link/Dillonb/nmuidi/workflows/build/main/nmuidi-windows.zip). The easiest way to use it in Windows is to make a folder (something like `C:\bin`) and add that folder to your path. Then add `nmuidi.exe` file you downloaded to that folder and restart any terminals you have open.
 
 Then you can run `nmuidi /path/to/some/dir` and you should see some output like the following:
+</details>
+<details>
+<summary>Cargo install</summary>
+To install `nmuidi` using Cargo, run the following command:
+
+```bash
+cargo install nmuidi
+```
+
+Then you can run `nmuidi /path/to/some/dir` and you should see some output like the following:
+</details>
+
 
 ```PS
 → ~\repos\nmuidi [main ≡ +0 ~1 -0 !]› nmuidi test
@@ -33,3 +47,4 @@ Done.
 
 1. It's an inside joke <https://steamcommunity.com/app/570/discussions/0/558748653730465633/>
 2. Having a complicated name makes it harder to accidentally nuke a folder. This program does NOT ask you to confirm, if you tell it to delete something it will start deleting things immediately.
+
