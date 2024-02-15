@@ -10,6 +10,7 @@ Deletes stuff, hopefully quickly
 
 <details>
 <summary>Pre-Compiled</summary>
+
 [Download nmuidi for Windows](https://nightly.link/Dillonb/nmuidi/workflows/build/main/nmuidi-windows.zip). The easiest way to use it in Windows is to make a folder (something like `C:\bin`) and add that folder to your path. Then add `nmuidi.exe` file you downloaded to that folder and restart any terminals you have open.
 
 Then you can run `nmuidi /path/to/some/dir` and you should see some output like the following:
