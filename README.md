@@ -17,8 +17,13 @@ Then you can run `nmuidi /path/to/some/dir` and you should see some output like 
 Cleaning test
 ```
 
-If you want to see the timings of your execution you'll need to set an environmental variable 
-(Powershell: $env:RUST_LOG = ‘trace', CMD: set RUST_LOG=debug), the output would look something like:
+To change the log level, set the `RUST_LOG` environment variable: 
+
+PowerShell: `$env:RUST_LOG = 'trace'`
+
+CMD: `set RUST_LOG=trace`
+
+The output will then look something like:
 
 ```PS
 → ~\repos\nmuidi [main ≡ +0 ~1 -0 !]› nmuidi test1 test2
