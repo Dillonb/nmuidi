@@ -13,9 +13,16 @@ You can download using the link above. The easiest way to use it in Windows is t
 Then you can run `nmuidi path\to\some\dir` 
 
 ### Example
+
 In Command Prompt
-C:\Users\Desktop\Test> nmuidi C:\Users\Desktop\Folder\file.txt
-C:\Users\Desktop\Test> nmuidi C:\Users\Desktop\Folder\New Folder
+
+`C:\User\Desktop\Test> nmuidi C:\Users\Desktop\Folder\file.txt`
+
+`C:\User\Desktop\Test> nmuidi C:\Users\Desktop\Folder\New Folder`
+
+(Make sure nmuidi.exe file is in the same directory)
+
+### Output
 
 you should see some output like the following:
 ```PS
