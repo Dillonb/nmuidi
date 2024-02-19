@@ -15,10 +15,19 @@ Then you can run `nmuidi /path/to/some/dir` and you should see some output like 
 ```PS
 → ~\repos\nmuidi [main ≡ +0 ~1 -0 !]› nmuidi test
 Cleaning test
-Cleaning with 3200 threads.
-Done cleaning files, took 0 seconds. Starting on dirs
-Done sorting, took 0 seconds. Starting to delete directories.
-Done deleting directories, took 0 seconds. Entire process took 0 seconds.
+```
+
+If you want to see the timings of your execution you'll need to set an environmental variable 
+(Powershell: $env:RUST_LOG = ‘trace', CMD: set RUST_LOG=debug), the output would look something like:
+
+```PS
+→ ~\repos\nmuidi [main ≡ +0 ~1 -0 !]› nmuidi test1 test2
+Cleaning test1
+Cleaning test2
+Total time: 10.00s
+Directory timings:
+    dir test1 took 5.00s
+    dir test2 took 5.00s
 Done.
 ```
 
