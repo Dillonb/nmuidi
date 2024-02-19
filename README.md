@@ -10,8 +10,14 @@ Deletes stuff, hopefully quickly
 
 You can download using the link above. The easiest way to use it in Windows is to make a folder (something like `C:\bin`) and add that folder to your path. Then add `nmuidi.exe` file you downloaded to that folder and restart any terminals you have open.
 
-Then you can run `nmuidi /path/to/some/dir` and you should see some output like the following:
+Then you can run `nmuidi path\to\some\dir` 
 
+### Example
+In Command Prompt
+C:\Users\Desktop\Test> nmuidi C:\Users\Desktop\Folder\file.txt
+C:\Users\Desktop\Test> nmuidi C:\Users\Desktop\Folder\New Folder
+
+you should see some output like the following:
 ```PS
 → ~\repos\nmuidi [main ≡ +0 ~1 -0 !]› nmuidi test
 Cleaning test
