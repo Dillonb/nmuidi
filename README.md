@@ -4,6 +4,8 @@ Deletes stuff, hopefully quickly
 
 [Download for Windows](https://nightly.link/Dillonb/nmuidi/workflows/build/main/nmuidi-windows.zip)
 
+[This video](https://www.youtube.com/watch?v=G8BdXgBdaOA) benchmarks several popular suggestions for deleting files quickly on Windows and compares them to nmuidi.
+
 ## How to use
 
 ### As a command-line tool
