@@ -1,14 +1,18 @@
 use std::{fs, path::PathBuf};
 
 use itertools::Itertools;
-
 use jwalk::{
     rayon::prelude::{IntoParallelRefIterator, ParallelBridge, ParallelIterator},
     WalkDir,
 };
-
 use log::error;
 
+/// `Cleaner` is a lazily executed framework for nmuidi.
+/// # Examples
+/// ```
+/// use nmuidi::prelude::*;
+/// let cleaner = Cleaner::new("some/path").clean();
+/// ```
 pub struct Cleaner {
     path: PathBuf,
     dirs: Vec<(PathBuf, usize)>, // (path, depth)
@@ -16,6 +20,7 @@ pub struct Cleaner {
 }
 
 impl Cleaner {
+    /// Form a new `Cleaner` stuct, does not execute anything until `.clean()` is called
     pub fn new<T>(path: T) -> Self
     where
         std::path::PathBuf: std::convert::From<T>,
@@ -27,6 +32,7 @@ impl Cleaner {
         }
     }
 
+    /// Perform the deletion of the selected directory
     pub fn clean(&mut self) {
         self.remove_files();
         self.remove_dirs();

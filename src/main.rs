@@ -1,5 +1,6 @@
 use log::{debug, trace};
-use nmuidi::nmuidi::Cleaner;
+#[doc(inline)]
+use nmuidi::prelude::*;
 use std::{env, time::Instant};
 
 fn main() {
