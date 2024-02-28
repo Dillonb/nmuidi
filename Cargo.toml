@@ -1,11 +1,11 @@
 [package]
 name = "nmuidi"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 description = "Parallelizes deleting directories which can significantly speed up deleting large deeply nested directories with a large number of files on Windows"
 readme = "README.md"
 homepage = "https://github.com/Dillonb/nmuidi"
-documentation = "https://github.com/Dillonb/nmuidi"
+documentation = "https://docs.rs/nmuidi"
 repository = "https://github.com/Dillonb/nmuidi"
 license = "MIT"
 keywords = ["windows", "delete", "parallel"]
