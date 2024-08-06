@@ -14,3 +14,6 @@ target/
 
 # Tmp files and directories used for testing
 tmp/
+
+# Direnv metadata
+.direnv
