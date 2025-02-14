@@ -2,7 +2,7 @@
 
 Deletes stuff, hopefully quickly
 
-[Download for Windows](https://nightly.link/Dillonb/nmuidi/workflows/build/main/nmuidi-windows.zip)
+To download, check out the [releases page](https://github.com/Dillonb/nmuidi/releases) or download [the latest nightly build](https://nightly.link/Dillonb/nmuidi/workflows/build/main/nmuidi-windows.zip)
 
 [This video](https://www.youtube.com/watch?v=G8BdXgBdaOA) benchmarks several popular suggestions for deleting files quickly on Windows and compares them to nmuidi.
 
