@@ -45,8 +45,16 @@ jobs:
       - name: Build
         run: cargo build --all --release
 
-      - name: Upload file
+      - name: Upload to artifacts
         uses: actions/upload-artifact@master
         with:
           name: nmuidi-windows
           path: target/release/nmuidi.exe
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            target/release/nmuidi.exe
+            LICENSE
