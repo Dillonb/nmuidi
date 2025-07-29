@@ -53,6 +53,12 @@ impl Cleaner {
         }
     }
 
+    fn is_reparse_point(meta: &std::fs::Metadata) -> bool {
+        use std::os::windows::fs::MetadataExt;
+        const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x0400;
+        meta.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0
+    }
+
     fn remove_files(&mut self) {
         let mut dirs: Vec<(std::path::PathBuf, usize)> = WalkDir::new(&self.path)
             .skip_hidden(false)
@@ -62,20 +68,37 @@ impl Cleaner {
             .flat_map(|entry| {
                 match entry {
                     Ok(entry) => {
-                        let f_type = entry.file_type;
                         let path = entry.path();
-                        let metadata = entry.metadata().unwrap();
+
+                        // Get metdata while avoiding walking into junctions
+                        let metadata = match fs::symlink_metadata(&path) {
+                            Ok(m) => m,
+                            Err(e) => {
+                                error!("Failed to get metadata for {}: {e}", path.display());
+                                return None;
+                            }
+                        };
+
+                        let f_type = metadata.file_type();
+
+                        // if this is a directory *and* reparse point then it's a junction,
+                        // delete it like a directory but skip walking inside
+                        if f_type.is_dir() && Cleaner::is_reparse_point(&metadata) {
+                            fs::remove_dir(&path).unwrap_or_else(|e| {
+                                error!("Failed to remove reparse point {}: {e}", path.display());
+                            });
+                            return None;
+                        }
 
                         let mut perm = metadata.permissions();
                         if perm.readonly() {
-                            // This is a UNIX concern, not a prob on Windows
                             #[allow(clippy::permissions_set_readonly_false)]
                             perm.set_readonly(false);
                             fs::set_permissions(&path, perm).unwrap_or_else(|e| {
-                                error!("Error making {} write-accessable: {e}", path.display());
+                                error!("Error making {} write-accessible: {e}", path.display());
                             });
                         }
-                        if f_type.is_file() || f_type.is_symlink() {
+                        if f_type.is_file() {
                             fs::remove_file(&path).unwrap_or_else(|e| {
                                 error!("Failed to remove file {}: {e}", path.display());
                             });
