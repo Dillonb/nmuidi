@@ -32,6 +32,11 @@ impl Cleaner {
         }
     }
 
+    pub fn threads(mut self, threads: usize) -> Self {
+        self.threads = threads;
+        self
+    }
+
     /// Perform the deletion of the selected directory
     pub fn clean(&mut self) {
         self.remove_files();
@@ -111,7 +116,8 @@ impl Cleaner {
                 None
             })
             .collect();
-        dirs.sort_by(|a, b| b.1.cmp(&a.1)); // Note reverse sort
+        dirs.sort_by_key(|b| std::cmp::Reverse(b.1)); // Note reverse sort
         self.dirs = dirs;
     }
 }
+    

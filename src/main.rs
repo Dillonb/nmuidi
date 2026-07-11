@@ -1,3 +1,4 @@
+use clap::{arg, command};
 use log::{debug, trace};
 #[doc(inline)]
 use nmuidi::prelude::*;
@@ -6,13 +7,42 @@ use std::{env, time::Instant};
 fn main() {
     pretty_env_logger::init();
 
+    let mut cmd = command!()
+        .arg(
+            arg!(-t --threads <THREADS> "Number of threads")
+                .value_parser(clap::value_parser!(usize)),
+        )
+        .arg(
+            arg!(<DIR> ... "One or more directories to clean")
+                .id("dirs")
+                .value_delimiter(',')
+                .required(true),
+        );
+
+    if env::args().any(|arg| arg == "/?" || arg == "-?") {
+        cmd.print_help().unwrap();
+        println!();
+        return;
+    }
+
+    let matches = cmd.get_matches();
+    let threads = matches.get_one::<usize>("threads");
+    let dirs: Vec<_> = matches
+        .get_many::<String>("dirs")
+        .expect("required")
+        .collect();
+
     let mut directory_timings = Vec::new();
     let start_time = Instant::now();
-    for dir in env::args().skip(1) {
+    for dir in dirs {
         println!("Cleaning {dir}");
         let start = Instant::now();
-
-        Cleaner::new(&dir).clean();
+        let mut cleaner = Cleaner::new(&dir);
+        if let Some(&threads) = threads {
+            debug!("Setting threads to {threads}");
+            cleaner = cleaner.threads(threads);
+        }
+        cleaner.clean();
         directory_timings.push((dir, start.elapsed()));
     }
 
