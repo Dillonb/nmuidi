@@ -32,6 +32,11 @@ impl Cleaner {
         }
     }
 
+    pub fn threads(mut self, threads: usize) -> Self {
+        self.threads = threads;
+        self
+    }
+
     /// Perform the deletion of the selected directory
     pub fn clean(&mut self) {
         self.remove_files();
