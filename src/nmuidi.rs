@@ -116,7 +116,8 @@ impl Cleaner {
                 None
             })
             .collect();
-        dirs.sort_by(|a, b| b.1.cmp(&a.1)); // Note reverse sort
+        dirs.sort_by_key(|b| std::cmp::Reverse(b.1)); // Note reverse sort
         self.dirs = dirs;
     }
 }
+    
